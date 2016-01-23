@@ -11,41 +11,42 @@
 */
 
 var app = {
-  bulk: null,
-  rendered: [],
+  // Cons
   w: null,
   itemW: null,
   initialCount: null,
+
+  // Data
+  bulk: null,
+  rendered: [],
   lastRowFirst: false,
 
   init: function init() {
     this.w = window.innerWidth;
     this.itemW = 350;
     this.initialCount = parseInt(this.w / this.itemW);
-    app.loadBulk();
+
+    app.loadBulk("bulk.json", function () {
+      app.loadWall();
+    });
+  },
+
+  loadBulk: function loadBulk(data, callback) {
+    $.getJSON(data, function (json) {
+      app.bulk = $.map(json.statuses, function (value, index) {
+        return [value];
+      });
+      callback();
+    });
   },
 
   loadWall: function loadWall() {
-    setTimeout(function () {
-      $("#d-row--top .d-card").each(function (index) {
-        var card = this;
+    // Initial load
+    for (var i = 0; i < this.initialCount * 2; i++) {
+      app.loadPost(app.getPost(), true, i);
+    }
 
-        setTimeout(function () {
-          $(card).parent('li').addClass("d-show");
-        }, index * 200);
-      });
-    }, 0);
-
-    setTimeout(function () {
-      $("#d-row--bottom .d-card").each(function (index) {
-        var card = this;
-
-        setTimeout(function () {
-          $(card).parent('li').addClass("d-show");
-        }, index * 200);
-      });
-    }, 50);
-
+    // Load new posts
     setTimeout(function () {
       app.loadNextItem();
     }, 1000);
@@ -54,43 +55,56 @@ var app = {
   loadNextItem: function loadNextItem() {
     // Random generator for displaying new posts
     setTimeout(function () {
-      app.loadPosts(false);
+      app.loadPost(app.getPost(), false); // Load only 1 item
       if (app.getBulkLength() > 0) {
         app.loadNextItem();
       }
     }, Math.floor(Math.random() * 4 + 2) * 1000);
   },
 
-  loadBulk: function loadBulk() {
-    $.getJSON("bulk.json", function (json) {
-      app.bulk = app.convertBulk(json);
-      app.loadPosts(true);
+  loadPost: function loadPost(item) {
+    var initial = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+    var images = [item.user.profile_image_url];
+    if (item.image_url) {
+      images.push(item.image_url);
+    }
+
+    app.preloadImages(images, function () {
+      app.renderPost(item, initial);
     });
   },
 
-  getBulkLength: function getBulkLength() {
-    return app.bulk.length;
-  },
+  renderPost: function renderPost(item) {
+    var initial = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 
-  convertBulk: function convertBulk(json) {
-    return $.map(json.statuses, function (value, index) {
-      return [value];
-    });
-  },
-
-  loadPosts: function loadPosts() {
-    var initial = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
-
-    if (initial) {
-      // Initial state, fill whole wall
-      for (var i = 0; i < this.initialCount; i++) {
-        app.renderPost(initial);
-        app.renderPost(initial);
-      };
-      app.loadWall();
+    var $newPost = $(app.getPostTemplate(item, initial));
+    if (app.lastRowFirst) {
+      $("#d-row--bottom").prepend($newPost);
     } else {
-      // Load one new post
-      app.renderPost(initial);
+      $("#d-row--top").prepend($newPost);
+    }
+    app.lastRowFirst = !app.lastRowFirst;
+
+    setTimeout(function () {
+      $newPost.addClass("d-show");
+    }, 16);
+
+    if (app.rendered.unshift($newPost) > this.initialCount * 2 + 4) {
+      var $last = app.rendered.pop();
+      $last.remove();
+    };
+
+    return $newPost;
+  },
+
+  getPostTemplate: function getPostTemplate(item) {
+    var initial = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+    if (item.network === "instagram") {
+      return app.getInstagram(item, initial);
+    } else if (item.network === "twitter") {
+      return app.getTweet(item, initial);
     }
   },
 
@@ -112,49 +126,12 @@ var app = {
     return '<li>' + '<div class="d-card d-card--instagram ' + anim + '">' + '<img src="' + item.image_url + '" alt="" class="d-card-photo">' + '<div class="d-card-user">' + '<img src="' + item.user.profile_image_url + '" alt="' + item.user.screen_name + '" class="d-card-userPhoto">' + '<p class="d-card-userName">@' + item.user.screen_name + '</p>' + '<p class="d-card-likeCount">' + item.favorite_count + '</p>' + '</div>' + '</div>' + '</li>';
   },
 
-  getPostTemplate: function getPostTemplate(item) {
-    var initial = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-
-    if (item.network === "instagram") {
-      // app.preloadImages([item.user.profile_image_url, item.image_url], function () {
-      //   return app.getInstagram(item, initial);
-      // });
-      return app.getInstagram(item, initial);
-    } else if (item.network === "twitter") {
-      // app.preloadImages([item.user.profile_image_url], function () {
-      //   return app.getTweet(item, initial);
-      // });
-      return app.getTweet(item, initial);
-    }
-  },
-
-  renderPost: function renderPost() {
-    var initial = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
-
-    var $newPost = $(app.getPostTemplate(app.getPost(), initial));
-    if (app.lastRowFirst) {
-      $("#d-row--bottom").prepend($newPost);
-    } else {
-      $("#d-row--top").prepend($newPost);
-    }
-    app.lastRowFirst = !app.lastRowFirst;
-
-    if (!initial) {
-      setTimeout(function () {
-        $newPost.addClass("d-show");
-      }, 16);
-    }
-
-    if (app.rendered.unshift($newPost) > this.initialCount * 2 + 4) {
-      var $last = app.rendered.pop();
-      $last.remove();
-    };
-
-    return $newPost;
-  },
-
   getPost: function getPost() {
     return app.bulk.shift();
+  },
+
+  getBulkLength: function getBulkLength() {
+    return app.bulk.length;
   },
 
   preloadImages: function preloadImages(images, callback) {
