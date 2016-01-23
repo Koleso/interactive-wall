@@ -382,7 +382,6 @@ body {
 }
 .d-card-photo {
   width: 350px;
-  height: 350px;
   pointer-events: none;
 }
 .d-card-user {

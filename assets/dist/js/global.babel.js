@@ -109,15 +109,21 @@ var app = {
     var anim = 'anim-flip-left';
     if (initial) anim = 'anim-flip';
 
-    return '<li>' + '<div class="d-card d-card--instagram ' + anim + '">' + '<img src="' + item.image_url + '" alt="" class="d-card-userPhoto">' + '<div class="d-card-user">' + '<img src="' + item.user.profile_image_url + '" alt="' + item.user.screen_name + '" class="d-card-userPhoto">' + '<p class="d-card-userName">@' + item.user.screen_name + '</p>' + '<p class="d-card-likeCount">' + item.favorite_count + '</p>' + '</div>' + '</div>' + '</li>';
+    return '<li>' + '<div class="d-card d-card--instagram ' + anim + '">' + '<img src="' + item.image_url + '" alt="" class="d-card-photo">' + '<div class="d-card-user">' + '<img src="' + item.user.profile_image_url + '" alt="' + item.user.screen_name + '" class="d-card-userPhoto">' + '<p class="d-card-userName">@' + item.user.screen_name + '</p>' + '<p class="d-card-likeCount">' + item.favorite_count + '</p>' + '</div>' + '</div>' + '</li>';
   },
 
   getPostTemplate: function getPostTemplate(item) {
     var initial = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 
     if (item.network === "instagram") {
+      // app.preloadImages([item.user.profile_image_url, item.image_url], function () {
+      //   return app.getInstagram(item, initial);
+      // });
       return app.getInstagram(item, initial);
     } else if (item.network === "twitter") {
+      // app.preloadImages([item.user.profile_image_url], function () {
+      //   return app.getTweet(item, initial);
+      // });
       return app.getTweet(item, initial);
     }
   },
@@ -140,7 +146,6 @@ var app = {
     }
 
     if (app.rendered.unshift($newPost) > this.initialCount * 2 + 4) {
-      console.log(app.rendered.length);
       var $last = app.rendered.pop();
       $last.remove();
     };
@@ -150,6 +155,25 @@ var app = {
 
   getPost: function getPost() {
     return app.bulk.shift();
+  },
+
+  preloadImages: function preloadImages(images, callback) {
+    var count = images.length;
+    if (count === 0) {
+      callback();
+    }
+
+    var loaded = 0;
+    for (var i = 0; i < count; i++) {
+      var img = new Image();
+      img.src = images[i];
+      img.onload = function () {
+        loaded++;
+        if (loaded === count) {
+          callback();
+        }
+      };
+    }
   }
 };
 
