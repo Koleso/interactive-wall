@@ -1,102 +1,165 @@
 /*
 *
-*  Project:    Interactive wall
-*  Author:     David Kolinek - www.davidkolinek.cz
-*  E-mail:     david.kolinek@gmail.com
+* Project:    Interactive wall
+* Author:     David Kolinek - www.davidkolinek.cz
+* E-mail:     david.kolinek@gmail.com
 *
-*  @param {Object} window, document, undefined
-*
+* open /Applications/Google\ Chrome\ Canary.app --args --allow-file-access-from-files/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary --args --allow-file-access-from-files
+* 
 */
 
-(function(window, document, undefined) {
-  
-  // Defaults
-  // =====================================
- 
-  var dk = window.dk = {
-      utils : {},
-      cache : {}
-  };
+var app = {
+  bulk: null,
+  rendered: [],
+  w: null,
+  itemW: null,
+  initialCount: null,
+  lastRowFirst: false,
 
+  init: function () {
+    this.w = window.innerWidth;
+    this.itemW = 350;
+    this.initialCount = parseInt(this.w / this.itemW);
+    app.loadBulk();
+  },
 
-  // Methods
-  // =====================================
-
-  dk.utils.init = function() {
-    dk.cache.window                = $(window);
-    dk.cache.document              = $(document);
-    dk.cache.html                  = $('html');
-    dk.cache.body                  = $('body');
-  };
-
-  // SCROLL DOWN PULSE
-  dk.utils.firstLoad = function(){
-
-    $('.row-top .card').each(function (index){
-      var card = this;
-
-      setTimeout(function (el) {
-        $(card).parent('li').addClass('show-card');
-      }, index*200);
-    });
-
-    setTimeout(function () {
-      $('.row-bottom .card').each(function (index){
+  loadWall: function () {
+    setTimeout(function() {
+      $("#d-row--top .d-card").each(function(index) {
         var card = this;
 
-        setTimeout(function (el) {
-          $(card).parent('li').addClass('show-card');
-        }, index*200);
+        setTimeout(function () {
+          $(card).parent('li').addClass("d-show");
+        },  index*200);
       });
-    }, 100);
+    }, 0);
 
-  };
+    setTimeout(function() {
+      $("#d-row--bottom .d-card").each(function(index) {
+        var card = this;
+        
+        setTimeout(function () {
+          $(card).parent('li').addClass("d-show");
+        },  index*200);
+      });
+    }, 50);
 
+    setTimeout(function() {
+      app.loadNextItem();
+    }, 1000);
 
-  dk.utils.domLoad = function() {
+  },
 
-    dk.utils.firstLoad();
-
-  };
-
-
-  // Initialize Events
-  // =====================================
-
-  dk.utils.init();
-
-  jQuery(function($) {
-    dk.utils.domLoad();
-  });
-
-
-})(window, document);
-
-// debouncing function from John Hann
-// http://unscriptable.com/index.php/2009/03/20/debouncing-javascript-methods/
-(function($,sr) {
-
-  var debounce = function (func, threshold, execAsap) {
-    var timeout;
-
-    return function debounced () {
-      var obj = this, args = arguments;
-      function delayed () {
-        if (!execAsap) {
-          func.apply(obj, args);
-        }
-        timeout = null;
+  loadNextItem: function () {
+    // Random generator for displaying new posts
+    setTimeout(function() {
+      app.loadPosts(false);
+      if(app.getBulkLength() > 0) {
+        app.loadNextItem();
       }
+    }, Math.floor(Math.random()*4+2)*1000);
+  },
 
-      if (timeout) {
-        clearTimeout(timeout);
-      } else if (execAsap) {
-        func.apply(obj, args);
-      }
-      timeout = setTimeout(delayed, threshold || 100);
+  loadBulk: function () {
+    $.getJSON("bulk.json", function(json) {
+      app.bulk = app.convertBulk(json);
+      app.loadPosts(true);
+    });
+  },
+
+  getBulkLength: function () {
+    return app.bulk.length;
+  },
+
+  convertBulk: function (json) {
+    return $.map(json.statuses, function(value, index) {
+      return [value];
+    });
+  },
+
+  loadPosts: function (initial = false) {
+    if(initial) {
+      // Initial state, fill whole wall
+      for (var i = 0; i < this.initialCount; i++) {
+        app.renderPost(initial);
+        app.renderPost(initial);
+      };
+      app.loadWall();
+
+    } else {
+      // Load one new post
+      app.renderPost(initial);
+    }
+  },
+
+  getTweet: function (item, initial = false) {
+    var anim = 'anim-flip-left';
+    if(initial) anim = 'anim-flip';
+
+    return '<li>' +
+          '<div class="d-card d-card--twitter '+anim+'">' +
+            '<p class="d-card-title">Twitter</p>' +
+            '<p class="d-card-message">'+item.text.replace(/(^|\s)(#[a-z\d-]+)/ig, "$1<span class='d-hash'>$2</span>")+'</p>' +
+            '<div class="d-card-user">' +
+              '<img src="'+item.user.profile_image_url+'" alt="'+item.user.screen_name+'" class="d-card-userPhoto">' +
+              '<p class="d-card-userName">@'+item.user.screen_name+'</p>' +
+              '<p class="d-card-likeCount">'+item.favorite_count+'</p>' +
+            '</div>' +
+          '</div>' +
+        '</li>';
+  },
+
+  getInstagram: function (item, initial = false) {
+    var anim = 'anim-flip-left';
+    if(initial) anim = 'anim-flip';
+
+    return '<li>' +
+          '<div class="d-card d-card--instagram '+anim+'">' +
+            '<img src="'+item.image_url+'" alt="" class="d-card-userPhoto">' +
+            '<div class="d-card-user">' +
+              '<img src="'+item.user.profile_image_url+'" alt="'+item.user.screen_name+'" class="d-card-userPhoto">' +
+              '<p class="d-card-userName">@'+item.user.screen_name+'</p>' +
+              '<p class="d-card-likeCount">'+item.favorite_count+'</p>' +
+            '</div>' +
+          '</div>' +
+        '</li>';
+  },
+
+  getPostTemplate: function (item, initial = false) {
+    if(item.network === "instagram") {
+      return app.getInstagram(item, initial);
+    } else if(item.network === "twitter") {
+      return app.getTweet(item, initial);
+    }
+  },
+
+  renderPost: function (initial = false) {
+    var $newPost = $(app.getPostTemplate(app.getPost(), initial));
+    if(app.lastRowFirst) {
+      $("#d-row--bottom").prepend($newPost);
+    } else {
+      $("#d-row--top").prepend($newPost);
+    }
+    app.lastRowFirst = !app.lastRowFirst;
+
+    if(!initial) {
+      setTimeout(function () {
+        $newPost.addClass("d-show");
+      }, 16);
+    }
+
+    if(app.rendered.unshift($newPost) > this.initialCount*2+4) {
+      console.log(app.rendered.length);
+      var $last = app.rendered.pop();
+      $last.remove();
     };
-  };
 
-  jQuery.fn[sr] = function(fn){ return fn ? this.bind('resize', debounce(fn)) : this.trigger(sr); };
+    return $newPost;
+  },
 
-})(jQuery,'smartresize');
+  getPost: function () {
+    return app.bulk.shift();
+  }
+};
+
+app.init();

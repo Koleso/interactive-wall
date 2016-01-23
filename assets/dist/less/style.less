@@ -386,6 +386,14 @@ a img{
           transform: translate(@x, @y);
 }
 
+.translateX(@x: 0) {
+  -webkit-transform: translateX(@x);
+     -moz-transform: translateX(@x);
+      -ms-transform: translateX(@x);
+       -o-transform: translateX(@x);
+          transform: translateX(@x);
+}
+
 .translate2D(@x: 0, @y: 0, @deg) {
   -webkit-transform: @x @y @deg;
      -moz-transform: @x @y @deg;
@@ -649,14 +657,14 @@ body {
 }
 
 .d-wall {
-	width: 90%;
+	width: 96%;
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	.translate(-50%, -50%);
-	overflow-x: auto;
-	-webkit-user-select: none;
-	cursor: -webkit-grab;
+	padding-left: 50px;
+	overflow: hidden;
+	.user-select(none);
 }
 
 .d-row-wrap {
@@ -673,10 +681,21 @@ body {
 
 	> li {
 		display: inline-block;
-		margin-left: 10px;
+		.perspective(1200px);
+		.transition(all .6s ease-in-out);
 
-		&:first-child {
-			margin-left: 0;
+		&.d-show {
+			.d-card {
+				margin-left: 0;
+				.rotateX(0);
+				.rotateY(0);
+				.opacity(100);
+
+				&:before,
+				&:after {
+					.opacity(0);
+				}
+			}
 		}
 	}
 }
@@ -684,10 +703,13 @@ body {
 .d-card {
 	background: #333;
 	.square(350px);
+	margin-right: 10px;
 	white-space: normal;
 	overflow: hidden;
+	.opacity(0);
+	.transition(all .6s ease-in-out);
 
-	/*&:before {
+	&:before {
 		content: '';
 		background: @blue;
 		.square(100%);
@@ -707,7 +729,7 @@ body {
 		left: 0;
 		z-index: 1;
 		.transition(all .6s ease-in-out);
-	}*/
+	}
 
 	&.d-card--twitter {
 		padding: 10px 12px;
@@ -785,178 +807,31 @@ body {
 }
 
 
-/*
-.d-wall {
-	.size(1260px, 710px);
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	margin: -355px 0 0 -700px;
-	padding: 0 70px;
-	overflow: visible;
-}
 
-.d-row {
-	.size(5000px, 350px);
-	float: left;
-	margin-left: -5px;
-	.c;
-
-	> li {
-		.square(350px);
-		float: left;
-		position: relative;
-		padding-left: 5px;
-		.perspective(1200px);
+// Animations
+// 
+.d-row--top {
+	.anim-flip {
+		.transform-origin(center bottom);
+		.rotateX(-90deg);
 	}
-}
+}	
 
-.row-middle {
-	.size(100%, 5px);
-	float: left;
-	font-size: 0;
-	overflow: hidden;
-}
-
-.row-bottom {
-	.card {
-		&:after {
-			.basic-gradient(rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0), bottom);
-			top: auto;
-			bottom: 0;
-		}
+.d-row--bottom {
+	.anim-flip {
+		.transform-origin(center top);
+		.rotateX(90deg);
 	}
-}
+} 
 
-.card {
-	background: #333;
-	position: relative;
-	.square(350px);
-	.opacity(0);
-	.transition(all .6s ease-in-out);
-
-	&:before {
-		content: '';
-		background: @blue;
-		.square(100%);
-		position: absolute;
-		top: 0;
-		left: 0;
-		z-index: 0;
-		.transition(all .6s ease-in-out);
-	}
-
-	&:after {
-		content: '';
-		.basic-gradient(rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0), top);
-		.size(100%, 50px);
-		position: absolute;
-		top: 0;
-		left: 0;
-		z-index: 1;
-		.transition(all .6s ease-in-out);
-	}
-}
-
-.show-card {
-	.card {
-		.rotateX(0);
-		.rotateY(0);
-		.opacity(100);
-
-		&:before,
-		&:after {
-			.opacity(0);
-		}
-	}
-}
-
-.anim-flip-top {
-	.rotateX(-90deg);
-	.transform-origin(center bottom);
-}
-
-.anim-flip-bottom {
-	.rotateX(90deg);
-	.transform-origin(center top);
-}
 
 .anim-flip-left {
+	margin-left: -360px;
 	.rotateY(-90deg);
 	.transform-origin(right center);
+	.transition(all .6s ease-in-out);
 }
 
-// Photo
-// 
-.card-photo {
-	.square(350px);
-}
-
-.card-user {
-	position: absolute;
-	bottom: 0;
-	left: 5px;
-	right: 0;
-	padding: 10px; 
-	z-index: 1;
-	.box-sizing(border-box);
-	#font > #family > .ubuntu();
-	font-weight: 300;
-}
-
-.card-user-photo {
-	.square(45px);
-	float: left;
-	margin-right: 10px;
-	.border-radius(24px);
-	.box-shadow(1px 1px 1px rgba(0, 0, 0, .2));
-}
-
-.card-user-name {
-	color: @white;
-	.font-size(16, 1.6em);
-	text-shadow: 1px 1px 1px rgba(0, 0, 0, .5);
-}
-
-.card-like-count {
-	.font-size(14, 1.2em);
-
-	&:before {
-		content: '';
-		background: url("../../images/sprite.svg") no-repeat 0 0;
-		.size(16px, 15px);
-		display: block;
-		float: left;
-		margin: 2px 4px 0 0;
-	}
-}
-
-
-
-// Text
-//
-.card-twitter {
-	padding: 10px;
-	.box-sizing(border-box);
-}
-
-.card-title {
-	padding: 5px 0 30px 0;
-	#font > #family > .ubuntu();
-	font-weight: 300;
-	color: @gold;
-	text-transform: uppercase;
-}
-
-.card-message {
-	.font-size(22, 1.5em);
-	font-weight: 300;
-}
-
-.hash {
-	color: @white;
-}
-*/
 
 // Utilities.less
 // Variables to customize the look and feel of Bootstrap

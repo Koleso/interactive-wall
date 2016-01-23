@@ -119,10 +119,22 @@ module.exports = function (grunt) {
 			}
 		},
 
+		babel: {
+			options: {
+				sourceMap: true,
+				presets: ['es2015']
+			},
+			dist: {
+				files: {
+					'<%= grunt.option(\"dist\") %>/js/global.babel.js': ['<%= grunt.option(\"src\") %>/js/global.js']
+				}
+			}
+		},
+
 		uglify: {
 			ugly: {
 				files: {
-					'<%= grunt.option(\"dist\") %>/js/global.min.js': ['<%= grunt.option(\"src\") %>/js/global.js']
+					'<%= grunt.option(\"dist\") %>/js/global.min.js': ['<%= grunt.option(\"dist\") %>/js/global.babel.js']
 				}
 			}
 		},
@@ -130,7 +142,7 @@ module.exports = function (grunt) {
 		watch: {
 			scripts: {
 				files: [basePaths.src+'/js/*.js'],
-				tasks: ['uglify'],
+				tasks: ['babel', 'uglify'],
 				options: {
 					spawn: false,
 				},
@@ -175,7 +187,8 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-ftp-deploy');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-notify');
+	grunt.loadNpmTasks('grunt-babel');
 
-	grunt.registerTask('init', ['clean', 'copy', 'uglify', 'svg_sprite', 'svg2png', 'concat', 'less', 'cssmin']);
+	grunt.registerTask('init', ['clean', 'babel', 'uglify', 'copy', 'svg_sprite', 'concat', 'less', 'cssmin']);
 	grunt.registerTask('default', ['init', 'watch', 'notify']);
 }
