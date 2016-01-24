@@ -263,8 +263,27 @@ body {
   color: #4ab2e3;
   font-weight: 400;
 }
-.d-wall {
-  width: 96%;
+.d-loading {
+  background: #111;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  text-align: center;
+  z-index: 10;
+  vertical-align: middle;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+.d-loading-title {
+  margin: 0;
+  font-size: 28px;
+  font-size: 2.8rem;
+  line-height: 2em;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -273,13 +292,94 @@ body {
   -ms-transform: translate(-50%, -50%);
   -o-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+  margin-top: -100px;
+  font-weight: 300;
+}
+.d-loading-title > strong {
+  font-family: "Ubuntu", "Arial CE", Arial, sans-serif;
+  font-size: 24px;
+  font-size: 2.4rem;
+  line-height: 2em;
+  color: #d6be87;
+  font-weight: 300;
+}
+.d-loading-spinner {
+  width: 30px;
+  height: 8px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -15px;
+}
+.d-loading-dot {
+  background-color: #d6be87;
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  top: 0;
+  margin-right: 3px;
+  border-radius: 1px;
+  transform-origin: center center;
+  opacity: 0;
+  -webkit-transform: scale(0.4);
+  -moz-transform: scale(0.4);
+  -ms-transform: scale(0.4);
+  -o-transform: scale(0.4);
+  transform: scale(0.4);
+}
+.d-loading-dot.d-loading-dot--dot1 {
+  left: 0;
+  animation: loading .6s linear infinite;
+}
+.d-loading-dot.d-loading-dot--dot2 {
+  left: 11px;
+  animation: loading .6s linear infinite .1s;
+}
+.d-loading-dot.d-loading-dot--dot3 {
+  left: 22px;
+  animation: loading .6s linear infinite .2s;
+}
+@keyframes loading {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale(0.4);
+    -moz-transform: scale(0.4);
+    -ms-transform: scale(0.4);
+    -o-transform: scale(0.4);
+    transform: scale(0.4);
+  }
+  50% {
+    opacity: 1;
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -ms-transform: scale(1);
+    -o-transform: scale(1);
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    -webkit-transform: scale(0.4);
+    -moz-transform: scale(0.4);
+    -ms-transform: scale(0.4);
+    -o-transform: scale(0.4);
+    transform: scale(0.4);
+  }
+}
+.d-wall {
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  margin-top: -350px;
   padding-left: 50px;
+  padding-right: 50px;
   overflow: hidden;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -o-user-select: none;
   user-select: none;
+  box-sizing: border-box;
 }
 .d-row-wrap {
   margin-top: 10px;
@@ -337,6 +437,7 @@ body {
   -ms-transition: all 0.6s ease-in-out;
   -o-transition: all 0.6s ease-in-out;
   transition: all 0.6s ease-in-out;
+  will-change: transform;
 }
 .d-card:before {
   content: '';
