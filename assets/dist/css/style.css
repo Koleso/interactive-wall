@@ -393,9 +393,11 @@ body {
 .d-row {
   white-space: nowrap;
   font-size: 0;
+  will-change: transform;
 }
 .d-row > li {
   display: inline-block;
+  vertical-align: top;
   -webkit-perspective: 1200px;
   -moz-perspective: 1200px;
   -ms-perspective: 1200px;
@@ -440,7 +442,6 @@ body {
   -ms-transition: all 0.6s ease-in-out;
   -o-transition: all 0.6s ease-in-out;
   transition: all 0.6s ease-in-out;
-  will-change: transform;
 }
 .d-card:before {
   content: '';
