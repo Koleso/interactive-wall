@@ -53,7 +53,11 @@ var app = {
 
     // Fake loading
     setTimeout(function () {
-      document.getElementById('d-loading').classList.add('d-fade');
+      var loading = document.getElementById('d-loading');
+      loading.classList.add('d-fade');
+      setTimeout(function () {
+        loading.parentNode.removeChild(loading);
+      }, 500);
 
       var elementsTop = document.querySelectorAll("#d-row--top li");
       var elementsBottom = document.querySelectorAll("#d-row--bottom li");
