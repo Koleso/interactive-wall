@@ -61,6 +61,7 @@ var app = {
       Array.prototype.forEach.call(elementsTop, function (el, i) {
         setTimeout(function () {
           el.classList.add('d-show');
+          console.log(el);
         }, i * 50);
       });
 
@@ -68,6 +69,7 @@ var app = {
         Array.prototype.forEach.call(elementsBottom, function (el, i) {
           setTimeout(function () {
             el.classList.add('d-show');
+            console.log(el);
           }, i * 50);
         });
       }, 50);
