@@ -73,7 +73,7 @@ var app = {
 
     // Load new posts
     setTimeout(function() {
-      //app.loadNextItem();
+      app.loadNextItem();
     }, 3000);
   },
 
