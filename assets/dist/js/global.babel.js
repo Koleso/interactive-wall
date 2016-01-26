@@ -10,11 +10,6 @@
 * 
 */
 
-var promise = new RSVP.Promise(function (resolve, reject) {
-  resolve(value);
-  reject(error);
-});
-
 var app = {
   // Cons
   w: null,
@@ -31,18 +26,23 @@ var app = {
     this.itemW = 350;
     this.initialCount = parseInt(this.w / this.itemW);
 
-    app.loadBulk("bulk.json", function () {
-      app.loadWall();
-    });
+    app.loadBulk("bulk.json");
   },
 
-  loadBulk: function loadBulk(data, callback) {
-    $.getJSON(data, function (json) {
-      app.bulk = $.map(json.statuses, function (value, index) {
-        return [value];
-      });
-      callback();
-    });
+  loadBulk: function loadBulk(file) {
+    var request = new XMLHttpRequest();
+    request.open('GET', file, true);
+
+    request.onload = function () {
+      var data = JSON.parse(request.responseText);
+      for (var key in data) {
+        if (data.hasOwnProperty(key)) {
+          app.bulk = data[key];
+          app.loadWall();
+        }
+      }
+    };
+    request.send();
   },
 
   loadWall: function loadWall() {
@@ -105,26 +105,28 @@ var app = {
   renderPost: function renderPost(item) {
     var initial = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 
-    var $newPost = $(app.getPostTemplate(item, initial));
+    var newPost = app.getPostTemplate(item, initial);
+    console.log(newPost);
     if (app.lastRowFirst) {
-      $("#d-row--bottom").prepend($newPost);
+      var parent = document.getElementById("d-row--bottom");
     } else {
-      $("#d-row--top").prepend($newPost);
+      var parent = document.getElementById("d-row--top");
     }
+    parent.insertBefore(newPost, parent.firstChild);
     app.lastRowFirst = !app.lastRowFirst;
 
     if (!initial) {
       setTimeout(function () {
-        $newPost.addClass("d-show");
+        newPost.classList.add("d-show");
       }, 16);
 
-      if (app.rendered.unshift($newPost) > this.initialCount * 2 + 4) {
-        var $last = app.rendered.pop();
-        $last.remove();
+      if (app.rendered.unshift(newPost) > this.initialCount * 2 + 4) {
+        var last = app.rendered.pop();
+        last.parentNode.removeChild(last);
       };
     }
 
-    return $newPost;
+    return newPost;
   },
 
   getPostTemplate: function getPostTemplate(item) {
@@ -143,7 +145,9 @@ var app = {
     var anim = 'anim-flip-left';
     if (initial) anim = 'anim-flip';
 
-    return '<li>' + '<div class="d-card d-card--twitter ' + anim + '">' + '<p class="d-card-title">Twitter</p>' + '<p class="d-card-message">' + item.text.replace(/(^|\s)(#[a-z\d-]+)/ig, "$1<span class='d-hash'>$2</span>") + '</p>' + '<div class="d-card-user">' + '<img src="' + item.user.profile_image_url + '" alt="' + item.user.screen_name + '" class="d-card-userPhoto">' + '<p class="d-card-userName">@' + item.user.screen_name + '</p>' + '<p class="d-card-likeCount">' + item.favorite_count + '</p>' + '</div>' + '</div>' + '</li>';
+    var node = document.createElement('li');
+    node.innerHTML = '<div class="d-card d-card--twitter ' + anim + '">' + '<p class="d-card-title">Twitter</p>' + '<p class="d-card-message">' + item.text.replace(/(^|\s)(#[a-z\d-]+)/ig, "$1<span class='d-hash'>$2</span>") + '</p>' + '<div class="d-card-user">' + '<img src="' + item.user.profile_image_url + '" alt="' + item.user.screen_name + '" class="d-card-userPhoto">' + '<p class="d-card-userName">@' + item.user.screen_name + '</p>' + '<p class="d-card-likeCount">' + item.favorite_count + '</p>' + '</div>' + '</div>';
+    return node;
   },
 
   getInstagram: function getInstagram(item) {
@@ -152,7 +156,9 @@ var app = {
     var anim = 'anim-flip-left';
     if (initial) anim = 'anim-flip';
 
-    return '<li>' + '<div class="d-card d-card--instagram ' + anim + '">' + '<img src="' + item.image_url + '" alt="" class="d-card-photo">' + '<div class="d-card-user">' + '<img src="' + item.user.profile_image_url + '" alt="' + item.user.screen_name + '" class="d-card-userPhoto">' + '<p class="d-card-userName">@' + item.user.screen_name + '</p>' + '<p class="d-card-likeCount">' + item.favorite_count + '</p>' + '</div>' + '</div>' + '</li>';
+    var node = document.createElement('li');
+    node.innerHTML = '<div class="d-card d-card--instagram ' + anim + '">' + '<img src="' + item.image_url + '" alt="" class="d-card-photo">' + '<div class="d-card-user">' + '<img src="' + item.user.profile_image_url + '" alt="' + item.user.screen_name + '" class="d-card-userPhoto">' + '<p class="d-card-userName">@' + item.user.screen_name + '</p>' + '<p class="d-card-likeCount">' + item.favorite_count + '</p>' + '</div>' + '</div>';
+    return node;
   },
 
   getPost: function getPost() {
