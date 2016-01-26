@@ -666,16 +666,22 @@ body {
 	z-index: 10;
 	vertical-align: middle;
 	.user-select(none);
+	transition: all .5s ease-in-out;
+
+	&.d-fade {
+		opacity: 0;
+	}
 }
 
 .d-loading-title {
+	.size(210px, 120px);
 	margin: 0;
 	.font-size(28, 2em);
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	.translate(-50%, -50%);
 	margin-top: -100px;
+	margin-left: -105px;
 	font-weight: 300;
 
 	> strong {
@@ -691,6 +697,7 @@ body {
 	position: absolute;
 	top: 50%;
 	left: 50%;
+	margin-top: 50px;
 	margin-left: -15px;
 }
 

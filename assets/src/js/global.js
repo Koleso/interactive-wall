@@ -8,6 +8,11 @@
 * 
 */
 
+var promise = new RSVP.Promise(function(resolve, reject) {
+  resolve(value);
+  reject(error);
+});
+
 var app = {
   // Cons
   w: null,
@@ -43,6 +48,28 @@ var app = {
     for (var i = 0; i < this.initialCount*2; i++) {
       app.loadPost(app.getPost(), true, i);
     }
+
+    // Fake loading
+    setTimeout(function() {
+      document.getElementById('d-loading').classList.add('d-fade');
+
+      var elementsTop = document.querySelectorAll("#d-row--top li");
+      var elementsBottom = document.querySelectorAll("#d-row--bottom li");
+
+      Array.prototype.forEach.call(elementsTop, function(el, i){
+        setTimeout(function(){
+          el.classList.add('d-show');
+        }, i*50);
+      });
+
+      setTimeout(function () {
+        Array.prototype.forEach.call(elementsBottom, function(el, i){
+          setTimeout(function(){
+            el.classList.add('d-show');
+          }, i*50);
+        });
+      }, 50);
+    }, 1000);
 
     // Load new posts
     setTimeout(function() {
@@ -80,14 +107,16 @@ var app = {
     }
     app.lastRowFirst = !app.lastRowFirst;
 
-    setTimeout(function () {
-      $newPost.addClass("d-show");
-    }, 16);
+    if(!initial) {
+      setTimeout(function () {
+        $newPost.addClass("d-show");
+      }, 16);
 
-    if(app.rendered.unshift($newPost) > this.initialCount*2+4) {
-      var $last = app.rendered.pop();
-      $last.remove();
-    };
+      if(app.rendered.unshift($newPost) > this.initialCount*2+4) {
+        var $last = app.rendered.pop();
+        $last.remove();
+      };
+    }
 
     return $newPost;
   },

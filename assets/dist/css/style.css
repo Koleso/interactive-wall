@@ -278,8 +278,14 @@ body {
   -moz-user-select: none;
   -o-user-select: none;
   user-select: none;
+  transition: all 0.5s ease-in-out;
+}
+.d-loading.d-fade {
+  opacity: 0;
 }
 .d-loading-title {
+  width: 210px;
+  height: 120px;
   margin: 0;
   font-size: 28px;
   font-size: 2.8rem;
@@ -287,12 +293,8 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  -o-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
   margin-top: -100px;
+  margin-left: -105px;
   font-weight: 300;
 }
 .d-loading-title > strong {
@@ -309,6 +311,7 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
+  margin-top: 50px;
   margin-left: -15px;
 }
 .d-loading-dot {
