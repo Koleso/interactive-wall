@@ -69,12 +69,12 @@ var app = {
           }, i*50);
         });
       }, 50);
-    }, 1000);
+    }, 1500);
 
     // Load new posts
     setTimeout(function() {
       app.loadNextItem();
-    }, 1000);
+    }, 1500);
   },
 
   loadNextItem: function () {
