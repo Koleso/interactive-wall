@@ -131,18 +131,17 @@ body {
 		display: inline-block;
 		vertical-align: top;
 		.perspective(1200px);
-		.transition(all .6s ease-in-out);
+		transition: all .6s ease-in-out;
 
 		&.d-show {
 			.d-card {
 				margin-left: 0;
-				.rotateX(0);
-				.rotateY(0);
-				.opacity(100);
+				transform: matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,0,0,0,1);
+				opacity: 1;
 
 				&:before,
 				&:after {
-					.opacity(0);
+					opacity: 0;
 				}
 			}
 		}
@@ -155,8 +154,8 @@ body {
 	margin-right: 10px;
 	white-space: normal;
 	overflow: hidden;
-	.opacity(0);
-	.transition(all .6s ease-in-out);
+	opacity: 0;
+	transition: all .6s ease-in-out;
 
 	&:before {
 		content: '';
@@ -166,7 +165,7 @@ body {
 		top: 0;
 		left: 0;
 		z-index: 0;
-		.transition(all .6s ease-in-out);
+		transition: all .6s ease-in-out;
 	}
 
 	&:after {
@@ -177,7 +176,7 @@ body {
 		top: 0;
 		left: 0;
 		z-index: 1;
-		.transition(all .6s ease-in-out);
+		transition: all .6s ease-in-out;
 	}
 
 	&.d-card--twitter {
@@ -261,22 +260,22 @@ body {
 // 
 .d-row--top {
 	.anim-flip {
-		.transform-origin(center bottom);
-		.rotateX(-90deg);
+		transform-origin: center bottom;
+		transform: matrix3d(1,0,0.00,0,0.00,0,-1.00,0,0,1,0,0,0,0,0,1);
 	}
 }	
 
 .d-row--bottom {
 	.anim-flip {
-		.transform-origin(center top);
-		.rotateX(90deg);
+		transform-origin: center top;
+		transform: matrix3d(1,0,0.00,0,0.00,0,1.00,0,0,-1,0,0,0,0,0,1);
 	}
 } 
 
 
 .anim-flip-left {
 	margin-left: -360px;
-	.rotateY(-90deg);
-	.transform-origin(right center);
-	.transition(all .6s ease-in-out);
+	transform: matrix3d(0,0,1.00,0,0.00,1,0.00,0,-1,0,0,0,0,0,0,1);
+	transform-origin: right center;
+	transition: all .6s ease-in-out;
 }
