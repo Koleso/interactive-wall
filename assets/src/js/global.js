@@ -78,7 +78,24 @@ var app = {
     // Load new posts
     setTimeout(function() {
       app.loadNextItem();
-    }, 3000);
+    }, 4000);
+
+    // Show info
+    setTimeout(function() {
+      app.showInfo();
+    }, 20000);
+  },
+
+  showInfo: function () {
+    document.documentElement.classList.add('d-show-info');
+
+    setTimeout(function() {
+      document.documentElement.classList.remove('d-show-info');
+    }, 4000);
+
+    setTimeout(function() {
+      app.showInfo();
+    }, Math.floor(Math.random()*12+8)*1000);
   },
 
   loadNextItem: function () {

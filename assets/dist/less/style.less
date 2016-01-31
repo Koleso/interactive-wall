@@ -611,6 +611,7 @@ a img{
 @white:			#fff;
 @black:			#000;
 @graydark:		#111;
+@gray:			#333;
 @blue:			#4ab2e3;
 @gold:			#d6be87;
 
@@ -755,16 +756,23 @@ body {
 	margin-top: -350px;
 	padding-left: 50px;
 	padding-right: 50px;
+	transition: all .6s ease-in-out;
 	overflow: hidden;
 	.user-select(none);
 	.border-box;
+
+	.d-show-info & {
+		margin-top: -445px;
+	}
 }
 
 .d-row-wrap {
-	margin-top: 10px;
-
 	&:first-child {
-		margin-top: 0;
+		margin-bottom: 5px;
+	}
+
+	&:last-child {
+		margin-top: 5px;
 	}
 }
 
@@ -773,10 +781,20 @@ body {
 	font-size: 0;
 	will-change: transform;
 
+	&.d-row--middle {
+		perspective: 1200px;
+		transition: all .6s ease-in-out;
+
+		.d-show-info & {
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+	}
+
 	> li {
 		display: inline-block;
 		vertical-align: top;
-		.perspective(1200px);
+		perspective: 1200px;
 		transition: all .6s ease-in-out;
 
 		&.d-show {
@@ -795,7 +813,7 @@ body {
 }
 
 .d-card {
-	background: #333;
+	background: @gray;
 	.square(350px);
 	margin-right: 10px;
 	white-space: normal;
@@ -897,7 +915,58 @@ body {
 // Info in middle row
 // 
 .d-info {
-	display: none;
+	height: 0;
+	position: relative;
+	.font-size(28);
+	color: @gold;
+	font-weight: 300;
+	transition: all .6s ease-in-out;
+
+	.d-show-info & {
+		height: 180px;
+
+		> p {
+			opacity: 1;
+			transition: all .6s ease-in-out .2s;
+		}
+
+		&:before,
+		&:after {
+			transform: matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,0,0,0,1);
+		}
+	}
+
+	&:before,
+	&:after {
+		content: '';
+		background-color: @gray;
+		.size(100%, 90px);
+		position: absolute;
+		left: 0;
+		transition: all .6s ease-in-out;
+		z-index: 0;
+	}
+
+	&:before {
+		top: 0;
+		transform-origin: center top;
+		transform: matrix3d(1,0,0.00,0,0.00,0,-1.00,0,0,1,0,0,0,0,0,1);
+	}
+
+	&:after {
+		bottom: 0;
+		transform-origin: center bottom;
+		transform: matrix3d(1,0,0.00,0,0.00,0,1.00,0,0,-1,0,0,0,0,0,1);
+	}
+
+	> p {
+		position: relative;
+		padding: 50px 70px;
+		line-height: 1.4em;
+		z-index: 1;
+		opacity: 0;
+		transition: all .2s ease-out 0s;
+	}
 }
 
 

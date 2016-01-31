@@ -380,6 +380,7 @@ body {
   margin-top: -350px;
   padding-left: 50px;
   padding-right: 50px;
+  transition: all 0.6s ease-in-out;
   overflow: hidden;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -388,23 +389,31 @@ body {
   user-select: none;
   box-sizing: border-box;
 }
-.d-row-wrap {
-  margin-top: 10px;
+.d-show-info .d-wall {
+  margin-top: -445px;
 }
 .d-row-wrap:first-child {
-  margin-top: 0;
+  margin-bottom: 5px;
+}
+.d-row-wrap:last-child {
+  margin-top: 5px;
 }
 .d-row {
   white-space: nowrap;
   font-size: 0;
   will-change: transform;
 }
+.d-row.d-row--middle {
+  perspective: 1200px;
+  transition: all 0.6s ease-in-out;
+}
+.d-show-info .d-row.d-row--middle {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
 .d-row > li {
   display: inline-block;
   vertical-align: top;
-  -webkit-perspective: 1200px;
-  -moz-perspective: 1200px;
-  -ms-perspective: 1200px;
   perspective: 1200px;
   transition: all 0.6s ease-in-out;
 }
@@ -418,7 +427,7 @@ body {
   opacity: 0;
 }
 .d-card {
-  background: #333;
+  background: #333333;
   width: 350px;
   height: 350px;
   margin-right: 10px;
@@ -531,7 +540,54 @@ body {
   color: #ffffff;
 }
 .d-info {
-  display: none;
+  height: 0;
+  position: relative;
+  font-size: 28px;
+  font-size: 2.8rem;
+  line-height: 1;
+  color: #d6be87;
+  font-weight: 300;
+  transition: all 0.6s ease-in-out;
+}
+.d-show-info .d-info {
+  height: 180px;
+}
+.d-show-info .d-info > p {
+  opacity: 1;
+  transition: all 0.6s ease-in-out 0.2s;
+}
+.d-show-info .d-info:before,
+.d-show-info .d-info:after {
+  transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+}
+.d-info:before,
+.d-info:after {
+  content: '';
+  background-color: #333333;
+  width: 100%;
+  height: 90px;
+  position: absolute;
+  left: 0;
+  transition: all 0.6s ease-in-out;
+  z-index: 0;
+}
+.d-info:before {
+  top: 0;
+  transform-origin: center top;
+  transform: matrix3d(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
+}
+.d-info:after {
+  bottom: 0;
+  transform-origin: center bottom;
+  transform: matrix3d(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1);
+}
+.d-info > p {
+  position: relative;
+  padding: 50px 70px;
+  line-height: 1.4em;
+  z-index: 1;
+  opacity: 0;
+  transition: all 0.2s ease-out 0s;
 }
 .d-row--top .anim-flip {
   transform-origin: center bottom;
